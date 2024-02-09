@@ -5,10 +5,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import sapala.s2sauthservice.entity.PublicKey
 import sapala.s2sauthservice.entity.RequestToken
 
 @RestController
@@ -25,5 +23,12 @@ class S2sController(private val tokenService: TokenService) {
     fun requestToken(body: RequestToken) {
         log.info("Service '${body.serviceName}' requested to receive token on '${body.tokenReceiverUrl}'")
         tokenService.requestToken(body.serviceName, body.tokenReceiverUrl)
+    }
+
+    @GetMapping("/public-keys")
+    @Operation(summary = "Get public keys that can be used to verify token")
+    @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Ok")])
+    fun getPublicKeys(): Map<String, PublicKey> {
+        return tokenService.getPublicKeys()
     }
 }
