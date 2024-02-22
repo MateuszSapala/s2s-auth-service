@@ -8,7 +8,7 @@
         <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>sapala</groupId>
+    <groupId>sapala.s2s-auth-service</groupId>
     <artifactId>s2s-auth-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>s2s-auth-service</name>

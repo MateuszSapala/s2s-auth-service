@@ -3,16 +3,20 @@ package sapala.s2sauthservice
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
+import org.springframework.context.event.EventListener
 import sapala.s2sauthservice.config.Env
 
+
 @SpringBootApplication
-class S2sAuthServiceApplication(env: Env) {
+class S2sAuthServiceApplication(private val env: Env) {
     companion object {
         val log: Logger = LoggerFactory.getLogger(S2sAuthServiceApplication::class.java)
     }
 
-    init {
+    @EventListener(ApplicationReadyEvent::class)
+    fun afterStartup() {
         log.info("Swagger UI available at: http://localhost:{}/swagger-ui/index.html", env.port())
     }
 }

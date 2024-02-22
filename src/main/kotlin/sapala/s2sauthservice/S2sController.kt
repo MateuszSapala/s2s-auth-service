@@ -20,7 +20,7 @@ class S2sController(private val tokenService: TokenService) {
     @Operation(summary = "Requests a JWT that will be sent in separate requests to the URL specified in the body")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ApiResponses(value = [ApiResponse(responseCode = "204", description = "Accepted")])
-    fun requestToken(body: RequestToken) {
+    fun requestToken(@RequestBody body: RequestToken) {
         log.info("Service '${body.serviceName}' requested to receive token on '${body.tokenReceiverUrl}'")
         tokenService.requestToken(body.serviceName, body.tokenReceiverUrl)
     }
