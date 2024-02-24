@@ -86,16 +86,18 @@ class TokenService(
         }
     }
 
-    fun getExpirationEpochMilli() = Instant.now().plusMillis(env.tokenExpirationTime().toMillis()).toEpochMilli()
+    private fun Instant.getExpirationEpochMilli() = this.plusMillis(env.tokenExpirationTime().toMillis()).toEpochMilli()
 
     fun generateToken(serviceName: String): String {
+        val now = Instant.now()
         return Jwts.builder()
             .header()
             .keyId(keyId)
             .and()
             .claim("serviceName", serviceName)
             .signWith(keyPair.private)
-            .expiration(Date(getExpirationEpochMilli()))
+            .issuedAt(Date(now.toEpochMilli()))
+            .expiration(Date(now.getExpirationEpochMilli()))
             .compact()
     }
 
