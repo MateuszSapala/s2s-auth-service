@@ -112,7 +112,7 @@ class TokenService(
 
         val response = call.execute()
         if (!response.isSuccessful) {
-            log.warn("Unable to send token to {}", url)
+            log.warn("Unable to send token to {}. Response {}: '{}'", url, response.code, response.body?.string())
             return
         }
         log.info("Successfully send token to {}", url)
