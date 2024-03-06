@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import sapala.s2sauthservice.entity.PublicKey
 import sapala.s2sauthservice.entity.RequestToken
+import sapala.s2sauthservice.entity.SynchronizePublicKeys
+import sapala.s2sauthservice.services.TokenService
 
 @RestController
 @RequestMapping("/s2s-auth-service/api/v1")
@@ -29,6 +31,13 @@ class S2sController(private val tokenService: TokenService) {
     @Operation(summary = "Get public keys that can be used to verify token")
     @ApiResponses(value = [ApiResponse(responseCode = "200", description = "Ok")])
     fun getPublicKeys(): Map<String, PublicKey> {
-        return tokenService.getPublicKeys()
+        return tokenService.publicKeys
+    }
+
+    @PostMapping("/synchronize-keys")
+    @Operation(summary = "When endpoint is called it retrieves public key from other s2s-auth-service instance to synchronize public keys between them")
+    @ApiResponses(value = [ApiResponse(responseCode = "204", description = "Accepted")])
+    fun synchronizeKeys(@RequestBody body: SynchronizePublicKeys) {
+        tokenService.synchronizePublicKeys(body.publicKeysUrl)
     }
 }

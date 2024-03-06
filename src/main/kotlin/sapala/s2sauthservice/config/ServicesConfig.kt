@@ -13,9 +13,13 @@ class ServicesConfig {
         if (!services!!.contains(serviceName)) {
             return false
         }
-        if (!services[serviceName]!!.any { it.port == tokenReceiverUrl.port && it.host == tokenReceiverUrl.host }) {
+        if (!services[serviceName]!!.any { it.port == tokenReceiverUrl.port && it.host == tokenReceiverUrl.host && it.protocol == tokenReceiverUrl.protocol }) {
             return false
         }
         return true
+    }
+
+    fun s2sAuthServiceUrls(): List<URL> {
+        return services!!["s2s-auth-service"]!!
     }
 }

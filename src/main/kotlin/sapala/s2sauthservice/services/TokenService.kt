@@ -1,4 +1,4 @@
-package sapala.s2sauthservice
+package sapala.s2sauthservice.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -15,17 +15,20 @@ import sapala.s2sauthservice.config.Env
 import sapala.s2sauthservice.config.ServicesConfig
 import sapala.s2sauthservice.entity.PublicKey
 import sapala.s2sauthservice.entity.SendToken
+import sapala.s2sauthservice.entity.SynchronizePublicKeys
 import java.net.URL
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 
 @Service
 class TokenService(
     private val env: Env,
     private val servicesConfig: ServicesConfig,
+    private val synchronizationService: TokenSynchronizationService,
     private val client: OkHttpClient,
     private val mapper: ObjectMapper
 ) {
@@ -38,12 +41,21 @@ class TokenService(
     private val keyId = UUID.randomUUID().toString()
     private val algorithm = Jwts.SIG.EdDSA
     private val keyPair = algorithm.keyPair().build()
-    private val publicKeys = initializePublicKeys()
+    val publicKeys = initializePublicKeys()
 
     private fun initializePublicKeys(): MutableMap<String, PublicKey> {
         val file = env.publicKeyFile()
-        val publicKeys =
-            if (file.exists()) mapper.readValue<MutableMap<String, PublicKey>>(file.readText()) else HashMap()
+        val publicKeys = synchronizationService.getPublicKeysFromOtherInstances()
+        if (publicKeys.keys.isEmpty()) {
+            if (!env.independentStart()) {
+                log.error("The application cannot be started because it failed to retrieve public keys from other instances and the 'independent-start' property was not set to true")
+                exitProcess(10)
+            }
+            if (file.exists()) {
+                val keys = mapper.readValue<MutableMap<String, PublicKey>>(file.readText())
+                publicKeys.putAll(keys)
+            }
+        }
         val encodedPublicKey = Encoders.BASE64.encode(keyPair.public.encoded)
         publicKeys[keyId] = PublicKey(algorithm.id, encodedPublicKey, env.host(), System.currentTimeMillis())
         file.parentFile.mkdirs()
@@ -54,7 +66,7 @@ class TokenService(
 
     private fun scheduleExpiredPublicKeysRemoval() {
         Executors.newSingleThreadScheduledExecutor()
-            .scheduleAtFixedRate(this::removeExpiredPublicKeys, 0, 1, TimeUnit.HOURS)
+            .scheduleAtFixedRate(this::removeExpiredPublicKeys, 1, 60, TimeUnit.MINUTES)
     }
 
     private fun removeExpiredPublicKeys() {
@@ -118,7 +130,14 @@ class TokenService(
         log.info("Successfully send token to {}", url)
     }
 
-    fun getPublicKeys(): Map<String, PublicKey> {
-        return publicKeys
+    fun synchronizePublicKeys(publicKeysUrl: URL) {
+        executor.execute {
+            if (!servicesConfig.isCorrectReceiverUrl("s2s-auth-service", publicKeysUrl)) {
+                return@execute
+            }
+            val keys = synchronizationService.getPublicKeysFromOtherInstance(publicKeysUrl) ?: return@execute
+            publicKeys.putAll(keys)
+        }
     }
+
 }

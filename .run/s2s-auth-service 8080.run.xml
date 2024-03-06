@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="s2s-auth-service 8080" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="s2s-auth-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="sapala.s2sauthservice.S2sAuthServiceApplicationKt" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

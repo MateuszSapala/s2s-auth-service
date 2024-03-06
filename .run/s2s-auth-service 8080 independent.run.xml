@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="s2s-auth-service 8080 independent" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="s2s-auth-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="sapala.s2sauthservice.S2sAuthServiceApplication" />
+    <option name="VM_PARAMETERS" value="-Dindependent-start=true" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

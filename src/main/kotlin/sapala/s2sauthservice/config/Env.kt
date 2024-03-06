@@ -3,6 +3,8 @@ package sapala.s2sauthservice.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import java.io.File
+import java.net.URI
+import java.net.URL
 import java.time.Duration
 
 @Configuration
@@ -26,4 +28,11 @@ class Env {
     @Value("\${token.keys.public.file}")
     private val publicKeyFile: File? = null
     fun publicKeyFile() = publicKeyFile!!
+
+    @Value("\${independent-start}")
+    private val independentStart: Boolean? = null
+
+    fun independentStart() = independentStart!!
+
+    fun serverUrl(): URL = URI.create("http://${host()}:${port()}").toURL()
 }
