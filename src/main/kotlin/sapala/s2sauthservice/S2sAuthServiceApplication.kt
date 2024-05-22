@@ -20,7 +20,7 @@ class S2sAuthServiceApplication(private val env: Env, private val tokenSynchroni
     @EventListener(ApplicationReadyEvent::class)
     fun afterStartup() {
         tokenSynchronizationService.requestKeySynchronizationOnOtherInstances()
-        log.info("Swagger UI available at: http://localhost:{}/swagger-ui/index.html", env.port())
+        log.info("Swagger UI available at: https://localhost:{}/swagger-ui/index.html", env.port())
     }
 }
 
