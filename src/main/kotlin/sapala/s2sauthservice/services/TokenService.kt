@@ -15,7 +15,6 @@ import sapala.s2sauthservice.config.Env
 import sapala.s2sauthservice.config.ServicesConfig
 import sapala.s2sauthservice.entity.PublicKey
 import sapala.s2sauthservice.entity.SendToken
-import sapala.s2sauthservice.entity.SynchronizePublicKeys
 import java.net.URL
 import java.time.Instant
 import java.util.*
@@ -39,7 +38,7 @@ class TokenService(
 
     private val executor = Executors.newVirtualThreadPerTaskExecutor()
     private val keyId = UUID.randomUUID().toString()
-    private val algorithm = Jwts.SIG.EdDSA
+    private val algorithm = Jwts.SIG.RS256
     private val keyPair = algorithm.keyPair().build()
     val publicKeys = initializePublicKeys()
 
@@ -105,8 +104,10 @@ class TokenService(
         return Jwts.builder()
             .header()
             .keyId(keyId)
+            .type("JWT")
             .and()
-            .claim("serviceName", serviceName)
+            .issuer("s2s-auth-service")
+            .subject(serviceName)
             .signWith(keyPair.private)
             .issuedAt(Date(now.toEpochMilli()))
             .expiration(Date(now.getExpirationEpochMilli()))
