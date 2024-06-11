@@ -1,0 +1,19 @@
+participant client
+participant build-manager-service
+participant build-service
+activate client
+client -:2> build-manager-service: ++sending a ZIP file with a multi-module application++
+activate build-manager-service
+note over build-manager-service:++decompressing a ZIP file++
+loop i <= number of modules
+note over build-manager-service:++compressing a single module into a ZIP file++
+activate build-service
+build-manager-service-:2>build-service:++sending ZIP file++
+note over build-service:++file decompression++
+note over build-service:++building the project and creating the JAR file++
+build-service-:2>build-manager-service:++sending JAR file++
+deactivate build-service
+end
+note over build-manager-service:++compressing modules into a ZIP file++
+build-manager-service -:2> client: ++sending zip file with built modules++
+deactivate build-manager-service

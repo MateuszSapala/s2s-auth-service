@@ -1,0 +1,20 @@
+participant microservice 1
+participant s2s-auth-service
+participant microservice 2
+activate microservice 1
+
+microservice 1 -:2> s2s-auth-service: ++public keys retrieval++
+activate s2s-auth-service
+s2s-auth-service --:2>> microservice 1: ++return public keys++
+deactivate s2s-auth-service
+deactivate microservice 1
+
+note over microservice 1,microservice 2: ++some time later++
+
+activate microservice 2
+microservice 2 -:2> microservice 1: ++request authorized with JWT token++
+activate microservice 1
+box over microservice 1: ++token signature verification\nusing public keys++
+microservice 1 --:2>> microservice 2: ++response++
+deactivate microservice 1
+deactivate microservice 2

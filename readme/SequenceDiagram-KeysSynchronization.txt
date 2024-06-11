@@ -1,0 +1,29 @@
+participant s2s-auth-service 1
+participant s2s-auth-service 2
+activate s2s-auth-service 1
+note over s2s-auth-service 1: ++generating an RSA key pair++
+s2s-auth-service 1 -:2> s2s-auth-service 2: ++public key retrieval++
+s2s-auth-service 1 -:2> s2s-auth-service 2: ++public key synchronization request++
+note over s2s-auth-service 1: ++service ready for action++
+deactivate s2s-auth-service 1
+
+note over s2s-auth-service 1, s2s-auth-service 2: ++any time later++
+
+activate s2s-auth-service 2
+note over s2s-auth-service 2: ++generating an RSA key pair++
+s2s-auth-service 2 -:2> s2s-auth-service 1: ++public key retrieval++
+activate s2s-auth-service 1
+s2s-auth-service 1 --:2>> s2s-auth-service 2: ++return public keys++
+deactivate s2s-auth-service 1
+note over s2s-auth-service 2: ++adding public keys from 1++
+
+s2s-auth-service 2 -:2> s2s-auth-service 1: ++public key synchronization request++
+activate s2s-auth-service 1
+s2s-auth-service 1 -> s2s-auth-service 2: ++public key retrieval++
+s2s-auth-service 2 -->> s2s-auth-service 1: ++return public keys++
+note over s2s-auth-service 1: ++adding public keys fromh z 2++
+s2s-auth-service 1 -->> s2s-auth-service 2: ++synchronization completed++
+deactivate s2s-auth-service 1
+deactivate s2s-auth-service 2
+
+box over s2s-auth-service 1, s2s-auth-service 2: ++services ready to run and having the same list of public keys++

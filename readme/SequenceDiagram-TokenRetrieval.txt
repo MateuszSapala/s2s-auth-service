@@ -1,0 +1,22 @@
+participant microservice
+participant s2s-auth-service
+activate microservice
+microservice -:2> s2s-auth-service: ++public keys retrieval++
+activate s2s-auth-service
+s2s-auth-service --:2>> microservice: ++return public keys++
+deactivate s2s-auth-service
+
+microservice -:2> s2s-auth-service: ++request token++
+activate s2s-auth-service
+note over s2s-auth-service: ++verification of submitted data++
+s2s-auth-service --:2>> microservice: ++request accepted++++
+deactivate s2s-auth-service
+deactivate microservice
+
+note over microservice, s2s-auth-service: ++some time later++
+activate s2s-auth-service
+s2s-auth-service -:2> microservice: ++sending a token++
+activate microservice
+deactivate s2s-auth-service
+box over microservice: ++verifying sender's signature\n using public keys++
+note over microservice, s2s-auth-service: ++microservice now has a JWT token++
